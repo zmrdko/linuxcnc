@@ -1,0 +1,25 @@
+# This file was created with the Mesa Configuration Tool on Nov 25 2023 17:07:40
+# If you make changes to this file DO NOT use the Configuration Tool
+
+# Inputs
+net plus-home-joint-0 joint.0.pos-lim-sw-in
+net plus-home-joint-0 joint.0.home-sw-in <= hm2_7i95.0.inmux.00.input-00-not
+net joint-0-fault <= hm2_7i95.0.inmux.00.input-01
+net joint-0-fault => joint.0.amp-fault-in
+# E-Stop Chain
+loadrt estop_latch count=1
+addf estop-latch.0 servo-thread
+
+# E-Stop Loop
+net estop-loopin iocontrol.0.user-enable-out => estop-latch.0.ok-in
+net estop-loopout estop-latch.0.ok-out => iocontrol.0.emc-enable-in
+
+# E-Stop Reset
+net estop-reset iocontrol.0.user-request-enable
+net estop-reset => estop-latch.0.reset
+net remote-estop0 estop-latch.0.fault-in <= hm2_7i95.0.inmux.00.input-23
+
+# Outputs
+net estop-loopback => hm2_7i95.0.ssr.00.out-05
+net joint-0-enable => hm2_7i95.0.ssr.00.out-03
+net mist-output iocontrol.0.coolant-mist => hm2_7i95.0.ssr.00.out-02
