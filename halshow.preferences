@@ -1,6 +1,6 @@
 # Halshow settings
 # This file is generated automatically.
-wm geometry . 1094x800+694+113
+wm geometry . 1094x800+557+119
 placeFrames 0.3
 set ::ratio 0.3
 set ::old_w_leftf 160
@@ -23,18 +23,17 @@ set ::watchlist {
     pin+hm2_7i95.0.inmux.00.input-08
     pin+hm2_7i95.0.inmux.00.input-09
     pin+hm2_7i95.0.inmux.00.input-10
-    pin+joint.0.f-error
-    pin+joint.0.pos-cmd
-    pin+joint.0.pos-fb
-    pin+hm2_7i95.0.encoder.00.position
-    pin+hm2_7i95.0.stepgen.00.position-cmd
-    pin+hm2_7i95.0.stepgen.00.position-fb
-    pin+hm2_7i95.0.encoder.00.input-a
-    pin+hm2_7i95.0.encoder.00.input-b
-    pin+hm2_7i95.0.encoder.00.input-index
-    param+hm2_7i95.0.read-request.tmax
-    param+hm2_7i95.0.read.tmax
-    param+hm2_7i95.0.write.tmax
+    pin+timedelay.0.in
+    pin+timedelay.0.on-delay
+    pin+timedelay.0.off-delay
+    pin+timedelay.0.out
+    pin+flipflop.0.clk
+    pin+flipflop.0.data
+    pin+flipflop.0.out
+    pin+flipflop.0.out-not
+    pin+flipflop.0.reset
+    pin+flipflop.0.set
+    pin+flipflop.0.time
 }
 set ::workmode watchhal
 set ::watchInterval 100

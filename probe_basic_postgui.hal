@@ -1,5 +1,5 @@
-loadrt time
-loadrt not
+loadrt time count=1
+loadrt not count=1
 
 addf time.0 servo-thread
 addf not.0 servo-thread
@@ -18,7 +18,7 @@ net tool-change-confirmed   <=  qtpyvcp_manualtoolchange.changed
 net tool-number             =>  qtpyvcp_manualtoolchange.number
 
 # *** Probe graphic simulation trigger push probe tip ***
-net probe-in  =>  qtpyvcp.probe-in.out
+#net probe-in  =>  qtpyvcp.probe-in.out
 net probe-in  <=  qtpyvcp.probe-led.on
 
 # *** Set line below for actual spindle readout from your hal file ***

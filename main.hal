@@ -6,7 +6,7 @@
 loadrt [KINS](KINEMATICS)
 
 # motion controller
-loadrt [EMCMOT](EMCMOT) servo_period_nsec=[EMCMOT](SERVO_PERIOD) num_joints=[KINS](JOINTS)
+loadrt [EMCMOT](EMCMOT) servo_period_nsec=[EMCMOT](SERVO_PERIOD) num_joints=[KINS](JOINTS) num_dio=30 num_aio=30
 
 # hostmot2 driver
 loadrt hostmot2
@@ -17,18 +17,18 @@ setp hm2_[MESA](BOARD).0.watchdog.timeout_ns 10000000
 loadrt pid names=pid.x,pid.y,pid.z
 
 # THREADS
-addf hm2_[MESA](BOARD).0.read servo-thread
+addf [MESA](CARD0).read servo-thread
 addf motion-command-handler servo-thread
 addf motion-controller servo-thread
 addf pid.x.do-pid-calcs servo-thread
 addf pid.y.do-pid-calcs servo-thread
 addf pid.z.do-pid-calcs servo-thread
-addf hm2_[MESA](BOARD).0.write servo-thread
+addf [MESA](CARD0).write servo-thread
 
 # DPLL TIMER
-setp hm2_[MESA](BOARD).0.dpll.01.timer-us -50
-setp hm2_[MESA](BOARD).0.stepgen.timer-number 1
-setp hm2_[MESA](BOARD).0.encoder.timer-number 1
+setp [MESA](CARD0).dpll.01.timer-us -50
+setp [MESA](CARD0).stepgen.timer-number 1
+setp [MESA](CARD0).encoder.timer-number 1
 
 # Joint 0 Axis X
 # PID Setup
@@ -47,46 +47,46 @@ setp pid.x.error-previous-target true
 # joint-0 enable chain
 net joint-0-index-enable <=> pid.x.index-enable
 net joint-0-index-enable <=> joint.0.index-enable
-#net joint-0-index-enable <=> hm2_[MESA](BOARD).0.encoder.00.index-enable
-net joint-0-index-enable <=> hm2_[MESA](BOARD).0.stepgen.00.index-enable
+#net joint-0-index-enable <=> [MESA](CARD0).encoder.00.index-enable
+net joint-0-index-enable <=> [MESA](CARD0).stepgen.00.index-enable
 
 net joint-0-enable <= joint.0.amp-enable-out
 net joint-0-enable => pid.x.enable
 
-net joint-0-enable => hm2_[MESA](BOARD).0.stepgen.00.enable
+net joint-0-enable => [MESA](CARD0).stepgen.00.enable
 
 # Joint 0 Step Generator Settings
-setp hm2_[MESA](BOARD).0.stepgen.00.dirsetup [JOINT_0](DIRSETUP)
-setp hm2_[MESA](BOARD).0.stepgen.00.dirhold [JOINT_0](DIRHOLD)
-setp hm2_[MESA](BOARD).0.stepgen.00.steplen [JOINT_0](STEPLEN)
-setp hm2_[MESA](BOARD).0.stepgen.00.stepspace [JOINT_0](STEPSPACE)
-setp hm2_[MESA](BOARD).0.stepgen.00.position-scale [JOINT_0](SCALE)
-setp hm2_[MESA](BOARD).0.stepgen.00.maxvel [JOINT_0](STEPGEN_MAX_VEL)
-setp hm2_[MESA](BOARD).0.stepgen.00.maxaccel [JOINT_0](STEPGEN_MAX_ACC)
-setp hm2_[MESA](BOARD).0.stepgen.00.step_type 0
-setp hm2_[MESA](BOARD).0.stepgen.00.control-type 1
-setp hm2_[MESA](BOARD).0.stepgen.00.direction.invert_output true 
+setp [MESA](CARD0).stepgen.00.dirsetup [JOINT_0](DIRSETUP)
+setp [MESA](CARD0).stepgen.00.dirhold [JOINT_0](DIRHOLD)
+setp [MESA](CARD0).stepgen.00.steplen [JOINT_0](STEPLEN)
+setp [MESA](CARD0).stepgen.00.stepspace [JOINT_0](STEPSPACE)
+setp [MESA](CARD0).stepgen.00.position-scale [JOINT_0](SCALE)
+setp [MESA](CARD0).stepgen.00.maxvel [JOINT_0](STEPGEN_MAX_VEL)
+setp [MESA](CARD0).stepgen.00.maxaccel [JOINT_0](STEPGEN_MAX_ACC)
+setp [MESA](CARD0).stepgen.00.step_type 0
+setp [MESA](CARD0).stepgen.00.control-type 1
+setp [MESA](CARD0).stepgen.00.direction.invert_output true 
 
 
 # position command and feedback
 net joint-0-pos-cmd <= joint.0.motor-pos-cmd
 net joint-0-pos-cmd => pid.x.command
 
-net joint-0-pos-fb <= hm2_[MESA](BOARD).0.stepgen.00.position-fb
-#net joint-0-pos-fb <= hm2_[MESA](BOARD).0.encoder.00.position
+net joint-0-pos-fb <= [MESA](CARD0).stepgen.00.position-fb
+#net joint-0-pos-fb <= [MESA](CARD0).encoder.00.position
 net joint-0-pos-fb => joint.0.motor-pos-fb
 net joint-0-pos-fb => pid.x.feedback
 
 net joint.0.output <= pid.x.output
-net joint.0.output => hm2_[MESA](BOARD).0.stepgen.00.velocity-cmd
+net joint.0.output => [MESA](CARD0).stepgen.00.velocity-cmd
 
 # Encoder Setup
-setp hm2_[MESA](BOARD).0.encoder.00.scale  [JOINT_0](ENCODER_SCALE)
-setp hm2_[MESA](BOARD).0.encoder.00.counter-mode 0
-setp hm2_[MESA](BOARD).0.encoder.00.filter 1
-setp hm2_[MESA](BOARD).0.encoder.00.index-invert 0
-setp hm2_[MESA](BOARD).0.encoder.00.index-mask 0
-setp hm2_[MESA](BOARD).0.encoder.00.index-mask-invert 0
+setp [MESA](CARD0).encoder.00.scale  [JOINT_0](ENCODER_SCALE)
+setp [MESA](CARD0).encoder.00.counter-mode 0
+setp [MESA](CARD0).encoder.00.filter 1
+setp [MESA](CARD0).encoder.00.index-invert 0
+setp [MESA](CARD0).encoder.00.index-mask 0
+setp [MESA](CARD0).encoder.00.index-mask-invert 0
 
 # Joint 1 Axis Y
 # PID Setup
@@ -109,30 +109,30 @@ net joint-1-index-enable <=> joint.1.index-enable
 net joint-1-enable <= joint.1.amp-enable-out
 net joint-1-enable => pid.y.enable
 
-net joint-1-enable => hm2_[MESA](BOARD).0.stepgen.01.enable
+net joint-1-enable => [MESA](CARD0).stepgen.01.enable
 
 # Joint 1 Step Generator Settings
-setp hm2_[MESA](BOARD).0.stepgen.01.dirsetup [JOINT_1](DIRSETUP)
-setp hm2_[MESA](BOARD).0.stepgen.01.dirhold [JOINT_1](DIRHOLD)
-setp hm2_[MESA](BOARD).0.stepgen.01.steplen [JOINT_1](STEPLEN)
-setp hm2_[MESA](BOARD).0.stepgen.01.stepspace [JOINT_1](STEPSPACE)
-setp hm2_[MESA](BOARD).0.stepgen.01.position-scale [JOINT_1](SCALE)
-setp hm2_[MESA](BOARD).0.stepgen.01.maxvel [JOINT_1](STEPGEN_MAX_VEL)
-setp hm2_[MESA](BOARD).0.stepgen.01.maxaccel [JOINT_1](STEPGEN_MAX_ACC)
-setp hm2_[MESA](BOARD).0.stepgen.01.step_type 0
-setp hm2_[MESA](BOARD).0.stepgen.01.control-type 1
+setp [MESA](CARD0).stepgen.01.dirsetup [JOINT_1](DIRSETUP)
+setp [MESA](CARD0).stepgen.01.dirhold [JOINT_1](DIRHOLD)
+setp [MESA](CARD0).stepgen.01.steplen [JOINT_1](STEPLEN)
+setp [MESA](CARD0).stepgen.01.stepspace [JOINT_1](STEPSPACE)
+setp [MESA](CARD0).stepgen.01.position-scale [JOINT_1](SCALE)
+setp [MESA](CARD0).stepgen.01.maxvel [JOINT_1](STEPGEN_MAX_VEL)
+setp [MESA](CARD0).stepgen.01.maxaccel [JOINT_1](STEPGEN_MAX_ACC)
+setp [MESA](CARD0).stepgen.01.step_type 0
+setp [MESA](CARD0).stepgen.01.control-type 1
 
 
 # position command and feedback
 net joint-1-pos-cmd <= joint.1.motor-pos-cmd
 net joint-1-pos-cmd => pid.y.command
 
-net joint-1-pos-fb <= hm2_[MESA](BOARD).0.stepgen.01.position-fb
+net joint-1-pos-fb <= [MESA](CARD0).stepgen.01.position-fb
 net joint-1-pos-fb => joint.1.motor-pos-fb
 net joint-1-pos-fb => pid.y.feedback
 
 net joint.1.output <= pid.y.output
-net joint.1.output => hm2_[MESA](BOARD).0.stepgen.01.velocity-cmd
+net joint.1.output => [MESA](CARD0).stepgen.01.velocity-cmd
 
 # Joint 2 Axis Z
 # PID Setup
@@ -155,37 +155,35 @@ net joint-2-index-enable <=> joint.2.index-enable
 net joint-2-enable <= joint.2.amp-enable-out
 net joint-2-enable => pid.z.enable
 
-net joint-2-enable => hm2_[MESA](BOARD).0.stepgen.02.enable
+net joint-2-enable => [MESA](CARD0).stepgen.02.enable
 
 # Joint 2 Step Generator Settings
-setp hm2_[MESA](BOARD).0.stepgen.02.dirsetup [JOINT_2](DIRSETUP)
-setp hm2_[MESA](BOARD).0.stepgen.02.dirhold [JOINT_2](DIRHOLD)
-setp hm2_[MESA](BOARD).0.stepgen.02.steplen [JOINT_2](STEPLEN)
-setp hm2_[MESA](BOARD).0.stepgen.02.stepspace [JOINT_2](STEPSPACE)
-setp hm2_[MESA](BOARD).0.stepgen.02.position-scale [JOINT_2](SCALE)
-setp hm2_[MESA](BOARD).0.stepgen.02.maxvel [JOINT_2](STEPGEN_MAX_VEL)
-setp hm2_[MESA](BOARD).0.stepgen.02.maxaccel [JOINT_2](STEPGEN_MAX_ACC)
-setp hm2_[MESA](BOARD).0.stepgen.02.step_type 0
-setp hm2_[MESA](BOARD).0.stepgen.02.control-type 1
+setp [MESA](CARD0).stepgen.02.dirsetup [JOINT_2](DIRSETUP)
+setp [MESA](CARD0).stepgen.02.dirhold [JOINT_2](DIRHOLD)
+setp [MESA](CARD0).stepgen.02.steplen [JOINT_2](STEPLEN)
+setp [MESA](CARD0).stepgen.02.stepspace [JOINT_2](STEPSPACE)
+setp [MESA](CARD0).stepgen.02.position-scale [JOINT_2](SCALE)
+setp [MESA](CARD0).stepgen.02.maxvel [JOINT_2](STEPGEN_MAX_VEL)
+setp [MESA](CARD0).stepgen.02.maxaccel [JOINT_2](STEPGEN_MAX_ACC)
+setp [MESA](CARD0).stepgen.02.step_type 0
+setp [MESA](CARD0).stepgen.02.control-type 1
 
 
 # position command and feedback
 net joint-2-pos-cmd <= joint.2.motor-pos-cmd
 net joint-2-pos-cmd => pid.z.command
 
-net joint-2-pos-fb <= hm2_[MESA](BOARD).0.stepgen.02.position-fb
+net joint-2-pos-fb <= [MESA](CARD0).stepgen.02.position-fb
 net joint-2-pos-fb => joint.2.motor-pos-fb
 net joint-2-pos-fb => pid.z.feedback
 
 net joint.2.output <= pid.z.output
-net joint.2.output => hm2_[MESA](BOARD).0.stepgen.02.velocity-cmd
+net joint.2.output => [MESA](CARD0).stepgen.02.velocity-cmd
 
 #  Manual Tool Change Dialog
-#loadusr -W hal_manualtoolchange
-#net tool-change-request    =>  hal_manualtoolchange.change
-#net tool-change-confirmed  <=  hal_manualtoolchange.changed
-#net tool-number            =>  hal_manualtoolchange.number
+loadusr -W hal_manualtoolchange
+net tool-change iocontrol.0.tool-change => hal_manualtoolchange.change
+net tool-changed iocontrol.0.tool-changed <= hal_manualtoolchange.changed
+net tool-number iocontrol.0.tool-prep-number => hal_manualtoolchange.number
+net tool-prepare-loopback iocontrol.0.tool-prepare => iocontrol.0.tool-prepared
 
-# create signals for tool loading loopback
-#net tool-prep-loop iocontrol.0.tool-prepare => iocontrol.0.tool-prepared
-#net tool-change-loop iocontrol.0.tool-change => iocontrol.0.tool-changed
