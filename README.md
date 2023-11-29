@@ -1,2 +1,143 @@
 # linuxcnc
 linuxcnc configs
+
+<table>
+<tr>
+  <td>TB1</td>
+  <td>HW pin</td>
+  <td>HW connection</td>
+  <td>LINUXCNC HAL pin</td>
+</tr>
+<tr>
+  <td rowspan="8">ENCODER5</td>
+  <td>/IDX5</td>
+  <td></td>
+  <td></td>
+</tr>
+<tr>
+  <td>IDX5</td>
+  <td></td>
+  <td></td>
+</tr>
+<tr>
+  <td>+5V</td>
+  <td></td>
+  <td></td>
+</tr>
+<tr>
+  <td>/QB5</td>
+  <td></td>
+  <td></td>
+</tr>
+</tr>
+<tr>
+  <td>QB5</td>
+  <td></td>
+  <td></td>
+</tr>
+</tr>
+<tr>
+  <td>GND</td>
+  <td></td>
+  <td></td>
+</tr>
+<tr>
+  <td>/QA5</td>
+  <td></td>
+  <td></td>
+</tr>
+</tr>
+<tr>
+  <td>QA5</td>
+  <td></td>
+  <td></td>
+</tr>
+<tr>
+  <td rowspan="8">ENCODER4</td>
+  <td>/IDX4</td>
+  <td></td>
+  <td></td>
+</tr>
+<tr>
+  <td>IDX4</td>
+  <td></td>
+  <td></td>
+</tr>
+<tr>
+  <td>+5V</td>
+  <td></td>
+  <td></td>
+</tr>
+<tr>
+  <td>/QB4</td>
+  <td></td>
+  <td></td>
+</tr>
+</tr>
+<tr>
+  <td>QB4</td>
+  <td></td>
+  <td></td>
+</tr>
+</tr>
+<tr>
+  <td>GND</td>
+  <td></td>
+  <td></td>
+</tr>
+<tr>
+  <td>/QA4</td>
+  <td></td>
+  <td></td>
+</tr>
+</tr>
+<tr>
+  <td>QA4</td>
+  <td></td>
+  <td></td>
+</tr>
+<tr>
+  <td rowspan="8">ENCODER3</td>
+  <td>/IDX3</td>
+  <td></td>
+  <td></td>
+</tr>
+<tr>
+  <td>IDX3</td>
+  <td></td>
+  <td></td>
+</tr>
+<tr>
+  <td>+5V</td>
+  <td></td>
+  <td></td>
+</tr>
+<tr>
+  <td>/QB3</td>
+  <td></td>
+  <td></td>
+</tr>
+</tr>
+<tr>
+  <td>QB3</td>
+  <td></td>
+  <td></td>
+</tr>
+</tr>
+<tr>
+  <td>GND</td>
+  <td></td>
+  <td></td>
+</tr>
+<tr>
+  <td>/QA3</td>
+  <td></td>
+  <td></td>
+</tr>
+</tr>
+<tr>
+  <td>QA3</td>
+  <td></td>
+  <td></td>
+</tr>
+</table>
