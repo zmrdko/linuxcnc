@@ -10,3 +10,10 @@ net joint-0-fault => joint.0.amp-fault-in
 # Outputs
 net joint-0-enable => [MESA](CARD0).ssr.00.out-03
 net mist-output iocontrol.0.coolant-mist => [MESA](CARD0).ssr.00.out-02
+
+
+loadrt estop_latch
+addf estop-latch.0                        servo-thread
+net user-enable iocontrol.0.user-request-enable => estop-latch.0.reset
+net enable-latch estop-latch.0.ok-out => iocontrol.0.emc-enable-in
+net watchdog [MESA](CARD0).inmux.00.input-23-not => estop-latch.0.fault-in
