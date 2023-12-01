@@ -2,3 +2,4 @@ halshow.preferences
 linuxcnc.var
 linuxcnc.var.bak
 tool.tbl
+autosave.halscope
