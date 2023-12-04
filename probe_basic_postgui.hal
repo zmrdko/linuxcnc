@@ -13,6 +13,7 @@ net cycle-hours qtpyvcp.timerhours.in <= time.0.hours
 # *** Time items required for Probe Basic to run ***
 
 #  ---manual tool change signals---
+#loadusr -W hal_manualtoolchange
 net tool-change-request     =>  qtpyvcp_manualtoolchange.change
 net tool-change-confirmed   <=  qtpyvcp_manualtoolchange.changed
 net tool-number             =>  qtpyvcp_manualtoolchange.number
