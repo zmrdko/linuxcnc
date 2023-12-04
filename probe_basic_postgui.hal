@@ -1,8 +1,8 @@
 loadrt time count=1
-loadrt not count=1
+#loadrt not count=1
 
 addf time.0 servo-thread
-addf not.0 servo-thread
+#addf not.0 servo-thread
 
 net prog-running not.0.in <= halui.program.is-idle
 net prog-paused halui.program.is-paused => time.0.pause
