@@ -6,6 +6,8 @@ net plus-home-joint-0 joint.0.pos-lim-sw-in
 net plus-home-joint-0 joint.0.home-sw-in <= [MESA](CARD0).inmux.00.input-00-not
 net joint-0-fault <= [MESA](CARD0).inmux.00.input-01
 net joint-0-fault => joint.0.amp-fault-in
+net probe-in <= [MESA](CARD0).inmux.00.input-21-not
+net probe-in => motion.probe-input
 
 # Outputs
 net joint-0-enable => [MESA](CARD0).ssr.00.out-03
