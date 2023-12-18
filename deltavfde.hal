@@ -2,7 +2,7 @@
 # example usage of the DELTA VFD-B driver
 # detail HAL and INI settings are at configs/araisrobo/css/
 # 
-loadusr -Wn spindle-vfd vfdb_vfd -n spindle-vfd -I deltavfde.ini -S VFDE -r 
+loadusr -Wn spindle-vfd vfde_vfd -n spindle-vfd -I deltavfde.ini -S VFDE -r 
 
 # connect the spindle on pin to the VF-S11
 net spindle-on => spindle-vfd.spindle-on spindle.0.on
@@ -15,7 +15,6 @@ net vfdb-at-speed <= spindle-vfd.at-speed spindle.0.at-speed
 
 # take precedence over control panel
 setp spindle-vfd.enable 1
-
 setp spindle-vfd.rpm-limit 24000
 setp spindle-vfd.nameplate-RPM 24000
 setp spindle-vfd.nameplate-HZ 400
