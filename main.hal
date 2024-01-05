@@ -10,8 +10,12 @@ loadrt [EMCMOT](EMCMOT) servo_period_nsec=[EMCMOT](SERVO_PERIOD) num_joints=[KIN
 
 # hostmot2 driver
 loadrt hostmot2
-loadrt [HM2](DRIVER) board_ip=[HM2](ADDRESS) config="num_encoders=6 num_stepgens=6 sserial_port_0=00000000"
+loadrt [HM2](DRIVER) board_ip=[HM2](ADDRESS) config="num_encoders=4 num_stepgens=4 sserial_port_0=00000000"
 
+setp hm2_[MESA](BOARD).0.gpio.008.is_output true
+setp hm2_[MESA](BOARD).0.gpio.009.is_output true
+setp hm2_[MESA](BOARD).0.gpio.010.is_output true
+setp hm2_[MESA](BOARD).0.gpio.011.is_output true
 setp hm2_[MESA](BOARD).0.watchdog.timeout_ns 10000000
 
 loadrt pid names=pid.x,pid.y,pid.z
