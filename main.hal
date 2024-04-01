@@ -102,6 +102,7 @@ net joint-1-pos-fb <= [MESA](CARD0).encoder.01.position
 net joint-1-pos-fb => joint.1.motor-pos-fb
 
 net joint.1.output => [MESA](CARD0).stepgen.01.velocity-cmd
+net joint.1.output <= joint.1.vel-cmd
 
 # Encoder Setup
 setp [MESA](CARD0).encoder.01.scale  [JOINT_0](ENCODER_SCALE)
@@ -142,6 +143,7 @@ net joint-2-pos-fb <= [MESA](CARD0).encoder.02.position
 net joint-2-pos-fb => joint.2.motor-pos-fb
 
 net joint.2.output => [MESA](CARD0).stepgen.02.velocity-cmd
+net joint.2.output <= joint.2.vel-cmd
 
 # Encoder Setup
 setp [MESA](CARD0).encoder.02.scale  [JOINT_0](ENCODER_SCALE)
@@ -182,6 +184,7 @@ net joint-3-pos-fb <= [MESA](CARD0).encoder.03.position
 net joint-3-pos-fb => joint.3.motor-pos-fb
 
 net joint.3.output => [MESA](CARD0).stepgen.03.velocity-cmd
+net joint.3.output <= joint.3.vel-cmd
 
 # Encoder Setup
 setp [MESA](CARD0).encoder.03.scale  [JOINT_0](ENCODER_SCALE)

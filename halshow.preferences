@@ -25,6 +25,28 @@ set ::watchlist {
     pin+hm2_7i95.0.encoder.00.position
     pin+hm2_7i95.0.stepgen.00.position-cmd
     pin+hm2_7i95.0.stepgen.00.position-fb
+    pin+joint.1.f-error
+    pin+joint.1.f-error-lim
+    pin+joint.1.f-errored
+    pin+joint.1.motor-pos-cmd
+    pin+joint.1.motor-pos-fb
+    pin+joint.1.pos-cmd
+    pin+joint.1.pos-fb
+    pin+hm2_7i95.0.encoder.01.position
+    pin+hm2_7i95.0.stepgen.01.position-cmd
+    pin+hm2_7i95.0.stepgen.01.position-fb
+    pin+joint.2.f-error
+    pin+joint.2.f-error-lim
+    pin+joint.2.f-errored
+    pin+joint.2.motor-pos-cmd
+    pin+joint.2.motor-pos-fb
+    pin+joint.2.pos-cmd
+    pin+joint.2.pos-fb
+    pin+hm2_7i95.0.encoder.02.position
+    pin+hm2_7i95.0.stepgen.02.position-cmd
+    pin+hm2_7i95.0.stepgen.02.position-fb
+    param+hm2_7i95.0.encoder.01.scale
+    param+hm2_7i95.0.encoder.02.scale
 }
 set ::workmode watchhal
 set ::watchInterval 100
