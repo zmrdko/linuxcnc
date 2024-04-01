@@ -1,0 +1,35 @@
+# Halshow settings
+# This file is generated automatically.
+wm geometry . 915x982+1685+128
+placeFrames 0.3706395348837209
+set ::ratio 0.3706395348837209
+set ::old_w_leftf 160
+set ::watchlist {
+    pin+joint.3.f-error
+    pin+joint.3.f-error-lim
+    pin+joint.3.f-errored
+    pin+joint.3.motor-pos-cmd
+    pin+joint.3.motor-pos-fb
+    pin+joint.3.pos-cmd
+    pin+joint.3.pos-fb
+    pin+hm2_7i95.0.encoder.03.position
+    pin+hm2_7i95.0.stepgen.03.position-cmd
+    pin+hm2_7i95.0.stepgen.03.position-fb
+    pin+joint.0.f-error
+    pin+joint.0.f-error-lim
+    pin+joint.0.f-errored
+    pin+joint.0.motor-pos-cmd
+    pin+joint.0.motor-pos-fb
+    pin+joint.0.pos-cmd
+    pin+joint.0.pos-fb
+    pin+hm2_7i95.0.encoder.00.position
+    pin+hm2_7i95.0.stepgen.00.position-cmd
+    pin+hm2_7i95.0.stepgen.00.position-fb
+}
+set ::workmode watchhal
+set ::watchInterval 100
+set ::col1_width 100
+set ::ffmts 
+set ::ifmts 
+set ::alwaysOnTop 0
+set ::autoSaveWatchlist 1
