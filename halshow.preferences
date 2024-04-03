@@ -1,6 +1,6 @@
 # Halshow settings
 # This file is generated automatically.
-wm geometry . 915x982+1617+236
+wm geometry . 915x982+1478+231
 placeFrames 0.3706395348837209
 set ::ratio 0.3706395348837209
 set ::old_w_leftf 160
@@ -45,6 +45,28 @@ set ::watchlist {
     pin+joint.1.home-sw-in
     pin+joint.2.home-sw-in
     pin+joint.3.home-sw-in
+    pin+spindle-vfd.at-speed
+    pin+spindle-vfd.current-tool-no
+    pin+spindle-vfd.enable
+    pin+spindle-vfd.error-code
+    pin+spindle-vfd.error-count
+    pin+spindle-vfd.frequency-command
+    pin+spindle-vfd.frequency-limit
+    pin+spindle-vfd.frequency-out
+    pin+spindle-vfd.inverter-load-percentage
+    pin+spindle-vfd.is-e-stopped
+    pin+spindle-vfd.is-stopped
+    pin+spindle-vfd.jog-mode
+    pin+spindle-vfd.max-rpm
+    pin+spindle-vfd.max-speed
+    pin+spindle-vfd.modbus-ok
+    pin+spindle-vfd.motor-RPM
+    pin+spindle-vfd.motor-RPS
+    pin+spindle-vfd.output-current
+    pin+spindle-vfd.output-voltage
+    pin+spindle-vfd.speed-command
+    pin+spindle-vfd.spindle-on
+    pin+spindle-vfd.status
 }
 set ::workmode watchhal
 set ::watchInterval 100
