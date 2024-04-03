@@ -33,8 +33,8 @@ setp [MESA](CARD0).encoder.timer-number 1
 
 # joint-0 enable chain
 net joint-0-index-enable <=> joint.0.index-enable
-net joint-0-index-enable <=> [MESA](CARD0).encoder.00.index-enable
-#net joint-0-index-enable <=> [MESA](CARD0).stepgen.00.index-enable
+#net joint-0-index-enable <=> [MESA](CARD0).encoder.00.index-enable
+net joint-0-index-enable <=> [MESA](CARD0).stepgen.00.index-enable
 
 net joint-0-enable <= joint.0.amp-enable-out
 net joint-0-enable => [MESA](CARD0).stepgen.00.enable
@@ -56,8 +56,8 @@ setp [MESA](CARD0).stepgen.00.direction.invert_output true
 net joint-0-pos-cmd <= joint.0.motor-pos-cmd
 net joint-0-pos-cmd <= [MESA](CARD0).stepgen.00.position-cmd
 
-#net joint-0-pos-fb <= [MESA](CARD0).stepgen.00.position-fb
-net joint-0-pos-fb <= [MESA](CARD0).encoder.00.position
+net joint-0-pos-fb <= [MESA](CARD0).stepgen.00.position-fb
+#net joint-0-pos-fb <= [MESA](CARD0).encoder.00.position
 net joint-0-pos-fb => joint.0.motor-pos-fb
 
 net joint.0.output => [MESA](CARD0).stepgen.00.velocity-cmd
@@ -75,8 +75,8 @@ setp [MESA](CARD0).encoder.00.index-mask-invert 0
 
 # joint-1 enable chain
 net joint-1-index-enable <=> joint.1.index-enable
-net joint-1-index-enable <=> [MESA](CARD0).encoder.01.index-enable
-#net joint-1-index-enable <=> [MESA](CARD0).stepgen.01.index-enable
+#net joint-1-index-enable <=> [MESA](CARD0).encoder.01.index-enable
+net joint-1-index-enable <=> [MESA](CARD0).stepgen.01.index-enable
 
 net joint-1-enable <= joint.1.amp-enable-out
 net joint-1-enable => [MESA](CARD0).stepgen.01.enable
@@ -97,8 +97,8 @@ setp [MESA](CARD0).stepgen.01.control-type 1
 net joint-1-pos-cmd <= joint.1.motor-pos-cmd
 net joint-1-pos-cmd <= [MESA](CARD0).stepgen.01.position-cmd
 
-#net joint-1-pos-fb <= [MESA](CARD0).stepgen.01.position-fb
-net joint-1-pos-fb <= [MESA](CARD0).encoder.01.position
+net joint-1-pos-fb <= [MESA](CARD0).stepgen.01.position-fb
+#net joint-1-pos-fb <= [MESA](CARD0).encoder.01.position
 net joint-1-pos-fb => joint.1.motor-pos-fb
 
 net joint.1.output => [MESA](CARD0).stepgen.01.velocity-cmd
@@ -116,8 +116,8 @@ setp [MESA](CARD0).encoder.01.index-mask-invert 0
 
 # joint-2 enable chain
 net joint-2-index-enable <=> joint.2.index-enable
-net joint-2-index-enable <=> [MESA](CARD0).encoder.02.index-enable
-#net joint-2-index-enable <=> [MESA](CARD0).stepgen.02.index-enable
+#net joint-2-index-enable <=> [MESA](CARD0).encoder.02.index-enable
+net joint-2-index-enable <=> [MESA](CARD0).stepgen.02.index-enable
 
 net joint-2-enable <= joint.2.amp-enable-out
 net joint-2-enable => [MESA](CARD0).stepgen.02.enable
@@ -138,8 +138,8 @@ setp [MESA](CARD0).stepgen.02.control-type 1
 net joint-2-pos-cmd <= joint.2.motor-pos-cmd
 net joint-2-pos-cmd <= [MESA](CARD0).stepgen.02.position-cmd
 
-#net joint-2-pos-fb <= [MESA](CARD0).stepgen.02.position-fb
-net joint-2-pos-fb <= [MESA](CARD0).encoder.02.position
+net joint-2-pos-fb <= [MESA](CARD0).stepgen.02.position-fb
+#net joint-2-pos-fb <= [MESA](CARD0).encoder.02.position
 net joint-2-pos-fb => joint.2.motor-pos-fb
 
 net joint.2.output => [MESA](CARD0).stepgen.02.velocity-cmd
@@ -157,8 +157,8 @@ setp [MESA](CARD0).encoder.02.index-mask-invert 0
 
 # joint-3 enable chain
 net joint-3-index-enable <=> joint.3.index-enable
-net joint-3-index-enable <=> [MESA](CARD0).encoder.03.index-enable
-#net joint-3-index-enable <=> [MESA](CARD0).stepgen.03.index-enable
+#net joint-3-index-enable <=> [MESA](CARD0).encoder.03.index-enable
+net joint-3-index-enable <=> [MESA](CARD0).stepgen.03.index-enable
 
 net joint-3-enable <= joint.3.amp-enable-out
 net joint-3-enable => [MESA](CARD0).stepgen.03.enable
@@ -179,8 +179,8 @@ setp [MESA](CARD0).stepgen.03.control-type 1
 net joint-3-pos-cmd <= joint.3.motor-pos-cmd
 net joint-3-pos-cmd <= [MESA](CARD0).stepgen.03.position-cmd
 
-#net joint-3-pos-fb <= [MESA](CARD0).stepgen.03.position-fb
-net joint-3-pos-fb <= [MESA](CARD0).encoder.03.position
+net joint-3-pos-fb <= [MESA](CARD0).stepgen.03.position-fb
+#net joint-3-pos-fb <= [MESA](CARD0).encoder.03.position
 net joint-3-pos-fb => joint.3.motor-pos-fb
 
 net joint.3.output => [MESA](CARD0).stepgen.03.velocity-cmd
