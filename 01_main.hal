@@ -32,8 +32,8 @@ setp [MESA](CARD0).encoder.timer-number 1
 # Joint 0 Axis X
 
 # joint-0 enable chain
-#net joint-0-index-enable <=> joint.0.index-enable
-#net joint-0-index-enable <=> [MESA](CARD0).encoder.00.index-enable
+net joint-0-index-enable <=> joint.0.index-enable
+net joint-0-index-enable <=> [MESA](CARD0).encoder.00.index-enable
 #net joint-0-index-enable <=> [MESA](CARD0).stepgen.00.index-enable
 
 net joint-0-enable <= joint.0.amp-enable-out
@@ -74,8 +74,8 @@ setp [MESA](CARD0).encoder.00.index-mask-invert 0
 # Joint 1 Axis Y1
 
 # joint-1 enable chain
-#net joint-1-index-enable <=> joint.1.index-enable
-#net joint-1-index-enable <=> [MESA](CARD0).encoder.01.index-enable
+net joint-1-index-enable <=> joint.1.index-enable
+net joint-1-index-enable <=> [MESA](CARD0).encoder.01.index-enable
 #net joint-1-index-enable <=> [MESA](CARD0).stepgen.01.index-enable
 
 net joint-1-enable <= joint.1.amp-enable-out
@@ -115,8 +115,8 @@ setp [MESA](CARD0).encoder.01.index-mask-invert 0
 # Joint 2 Axis Y2
 
 # joint-2 enable chain
-#net joint-2-index-enable <=> joint.2.index-enable
-#net joint-2-index-enable <=> [MESA](CARD0).encoder.02.index-enable
+net joint-2-index-enable <=> joint.2.index-enable
+net joint-2-index-enable <=> [MESA](CARD0).encoder.02.index-enable
 #net joint-2-index-enable <=> [MESA](CARD0).stepgen.02.index-enable
 
 net joint-2-enable <= joint.2.amp-enable-out
@@ -156,8 +156,8 @@ setp [MESA](CARD0).encoder.02.index-mask-invert 0
 # Joint 3 Axis Z
 
 # joint-3 enable chain
-#net joint-3-index-enable <=> joint.3.index-enable
-#net joint-3-index-enable <=> [MESA](CARD0).encoder.03.index-enable
+net joint-3-index-enable <=> joint.3.index-enable
+net joint-3-index-enable <=> [MESA](CARD0).encoder.03.index-enable
 #net joint-3-index-enable <=> [MESA](CARD0).stepgen.03.index-enable
 
 net joint-3-enable <= joint.3.amp-enable-out
