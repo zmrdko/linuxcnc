@@ -18,7 +18,7 @@ net joint-2-fault <= [MESA](CARD0).inmux.00.input-05-not
 net joint-2-fault => joint.2.amp-fault-in
 
 net plus-home-joint-3 joint.3.pos-lim-sw-in
-#net plus-home-joint-3 joint.3.home-sw-in <= [MESA](CARD0).inmux.00.input-06-not
+net plus-home-joint-3 joint.3.home-sw-in <= [MESA](CARD0).inmux.00.input-06-not
 net joint-3-fault <= [MESA](CARD0).inmux.00.input-07-not
 net joint-3-fault => joint.3.amp-fault-in
 
