@@ -24,8 +24,6 @@ o120 if [#<tool_number_entry_tool_page> NE #<probe_tool_number>]
   M101
 o120 endif
 
-o<tool_touch_off> call
-
 o<program_coolant> call
 
 o<m6_tool_call_tool_page> endsub
