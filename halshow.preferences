@@ -1,6 +1,6 @@
 # Halshow settings
 # This file is generated automatically.
-wm geometry . 915x982+1478+231
+wm geometry . 915x982+1635+240
 placeFrames 0.3706395348837209
 set ::ratio 0.3706395348837209
 set ::old_w_leftf 160
@@ -67,6 +67,8 @@ set ::watchlist {
     pin+spindle-vfd.speed-command
     pin+spindle-vfd.spindle-on
     pin+spindle-vfd.status
+    pin+spindle.0.at-speed
+    pin+motion.probe-input
 }
 set ::workmode watchhal
 set ::watchInterval 100

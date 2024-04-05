@@ -11,7 +11,7 @@ net spindle-on => spindle-vfd.spindle-on spindle.0.on
 net spindle-speed  spindle.0.speed-out spindle-vfd.speed-command
 
 # connect the VF-S11 at speed to the motion at speed
-net vfdb-at-speed <= spindle-vfd.at-speed spindle.0.at-speed
+#net vfdb-at-speed <= spindle-vfd.at-speed spindle.0.at-speed
 
 # take precedence over control panel
 setp spindle-vfd.enable 1

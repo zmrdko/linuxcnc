@@ -22,7 +22,7 @@ net plus-home-joint-3 joint.3.home-sw-in <= [MESA](CARD0).inmux.00.input-06-not
 net joint-3-fault <= [MESA](CARD0).inmux.00.input-07-not
 net joint-3-fault => joint.3.amp-fault-in
 
-net probe-in <= [MESA](CARD0).inmux.00.input-21-not
+net probe-in <= [MESA](CARD0).inmux.00.input-08-not
 net probe-in => motion.probe-input
 
 # Outputs
