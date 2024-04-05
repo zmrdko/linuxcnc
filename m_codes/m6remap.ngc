@@ -1,0 +1,9 @@
+o<m6remap> sub
+M6 (use built in M6 behavior)
+(.. move to tool length switch, probe and set tool length..)
+
+(o<tool_touch_off> call [#<fast_probe_fr>] [#<slow_probe_fr>] [#<z_max_travel>] [#<xy_max_travel>] [#<spindle_zero_height>] [#<retract_distance>] [#<go_back_to_start_pos>] [#<tool_diameter_probe_mode>] [#<tool_diameter_offset_mode>] [#<tool_diameter>])
+o<tool_touch_off> call [300] [60] [#<z_max_travel>] [#<xy_max_travel>] [#<spindle_zero_height>] [#<retract_distance>] [#<go_back_to_start_pos>] [#<tool_diameter_probe_mode>] [#<tool_diameter_offset_mode>] [#<tool_diameter>]
+
+o<m6remap> endsub
+m2
