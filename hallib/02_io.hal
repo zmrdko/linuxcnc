@@ -24,8 +24,8 @@ net joint-3-fault => joint.3.amp-fault-in
 
 #probe with debounce
 loadrt debounce cfg=1
-addf debounce.0 base-thread
-setp debounce.0.delay 100
+addf debounce.0 servo-thread
+setp debounce.0.delay 10
 net probe-in debounce.0.0.in <= [MESA](CARD0).inmux.00.input-08-not
 net probe-filt debounce.0.0.out => motion.probe-input
 
