@@ -1,9 +1,31 @@
-o<m6remap> sub
+O<m6remap> sub
+;(debug, change: current_tool=#<_current_tool>)
+;(debug, change: selected_tool=#<_selected_tool>)
+
+;o100 if [EXISTS[#<_ini[tool_change]xpos>]]
+;  (debug, [tool_change]xpos exists: #<_ini[tool_change]xpos>)
+;o100 else
+;  (debug, [tool_change]xpos does not exist)
+;o100 endif
+
+;o110 if [EXISTS[#<_ini[tool_change]ypos>]]
+;  (debug, [tool_change]ypos exists: #<_ini[tool_change]ypos>)
+;o110 else
+;  (debug, [tool_change]ypos does not exist)
+;o110 endif
+
+#<tmp_current_tool> = #<_current_tool>
+#<tmp_selected_tool> = #<_selected_tool>
+
+o100 if [#<tmp_current_tool> NE #<tmp_selected_tool>]
+  G0 G53  X#<_ini[tool_change]xpos> Y#<_ini[tool_change]ypos>  Z0
+o100 endif
+
 M6 (use built in M6 behavior)
-(.. move to tool length switch, probe and set tool length..)
-(o<tool_touch_off> call [#<fast_probe_fr>] [#<slow_probe_fr>] [#<z_max_travel>] [#<xy_max_travel>] [#<spindle_zero_height>] [#<retract_distance>] [#<go_back_to_start_pos>] [#<tool_diameter_probe_mode>] [#<tool_diameter_offset_mode>] [#<tool_diameter>])
 
-o<tool_touch_off> call [300] [60] [80] [0] [0] [1] [1] [0] [0] [0]
+o110 if [#<tmp_current_tool> NE #<tmp_selected_tool>]
+  o<tool_touch_off> call [300] [60] [80] [0] [0] [1] [1] [0] [0] [0]
+o110 endif
 
-o<m6remap> endsub
+O<m6remap> endsub [1]
 m2
