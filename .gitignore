@@ -1,0 +1,4 @@
+.vcp_persistent_data.pickle
+linuxcnc.var
+linuxcnc.var.bak
+python/__pycache__/
