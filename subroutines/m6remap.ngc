@@ -18,7 +18,8 @@ O<m6remap> sub
 #<tmp_selected_tool> = #<_selected_tool>
 
 o100 if [#<tmp_current_tool> NE #<tmp_selected_tool>]
-  G0 G53  X#<_ini[tool_change]xpos> Y#<_ini[tool_change]ypos>  Z0
+  G0 G53 Z0
+  G0 G53 X#<_ini[tool_change]xpos> Y#<_ini[tool_change]ypos>
 o100 endif
 
 M6 (use built in M6 behavior)
