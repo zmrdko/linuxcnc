@@ -38,6 +38,14 @@ G53 G0 Z0    (move to z0 home position)
 G53 G0 X#<tool_touch_x_coords> Y#<tool_touch_y_coords>
 G53 G0 Z#<tool_touch_z_coords>
 
+M102
+G4 P0.2
+M103
+G4 P0.2
+M102
+G4 P0.2
+M103
+
 G91
 F #<fast_probe_fr>
 G38.2 Z-[#<z_max_travel>]    (fast tool probe)
