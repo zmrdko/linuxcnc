@@ -22,12 +22,6 @@ net plus-home-joint-3 joint.3.home-sw-in <= [MESA](CARD0).inmux.00.input-06-not
 net joint-3-fault <= [MESA](CARD0).inmux.00.input-07-not
 net joint-3-fault => joint.3.amp-fault-in
 
-#probe with debounce
-loadrt debounce cfg=1
-addf debounce.0 servo-thread
-setp debounce.0.delay 10
-net probe-in debounce.0.0.in <= [MESA](CARD0).inmux.00.input-08-not
-net probe-filt debounce.0.0.out => motion.probe-input
 
 # Outputs
 net joint-0-enable => [MESA](CARD0).ssr.00.out-02
@@ -64,7 +58,7 @@ net aa4 estop-latch.0.fault-out tp.0.in
 net aa5 tp.0.q not.1.in
 net aa6 not.1.out [MESA](CARD0).ssr.00.out-04 [MESA](CARD0).ssr.00.out-05
 
-loadrt and2 count=6
+loadrt and2 count=7
 loadrt toggle count=1
 loadrt toggle2nist count=1
 
@@ -72,8 +66,18 @@ addf and2.0 servo-thread
 addf and2.1 servo-thread
 addf and2.2 servo-thread
 addf and2.3 servo-thread
+addf and2.6 servo-thread
 addf toggle.0 servo-thread
 addf toggle2nist.0 servo-thread
+
+#probe with debounce
+loadrt debounce cfg=1
+addf debounce.0 servo-thread
+setp debounce.0.delay 10
+net probe-in debounce.0.0.in <= [MESA](CARD0).inmux.00.input-08-not
+net probe-filt-and motion.digital-out-00 and2.6.in0
+net probe-debounce-and debounce.0.0.out => and2.6.in1
+net probe-out and2.6.out motion.probe-input
 
 # External Program Pause/Resume and Run/Step Buttons
 
