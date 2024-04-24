@@ -1,3 +1,1 @@
 # Place any HAL commands in this file that you want to run AFTER the GUI shuts down.
-# this may make it possible to set outputs when LinuxCNC is exited normally.
-# This file will not be written over by the configuration tool.
