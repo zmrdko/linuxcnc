@@ -1,4 +1,5 @@
 .vcp_persistent_data.pickle
+tool.tbl
 linuxcnc.var
 linuxcnc.var.bak
 halshow.preferences
