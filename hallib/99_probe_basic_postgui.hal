@@ -1,15 +1,15 @@
-loadrt time count=1
-#loadrt not count=1
+loadrt time names time.watch
+addf time.watch servo-thread
 
-addf time.0 servo-thread
-#addf not.0 servo-thread
+loadrt not names=not.timer
+addf not.timer servo-thread
 
-net prog-running not.0.in <= halui.program.is-idle
-net prog-paused halui.program.is-paused => time.0.pause
-net cycle-timer time.0.start <= not.0.out
-net cycle-seconds qtpyvcp.timerseconds.in <= time.0.seconds
-net cycle-minutes qtpyvcp.timerminutes.in <= time.0.minutes
-net cycle-hours qtpyvcp.timerhours.in <= time.0.hours
+net prog-running not.timer.in <= halui.program.is-idle
+net prog-paused halui.program.is-paused => time.watch.pause
+net cycle-timer time.watch.start <= not.timer.out
+net cycle-seconds qtpyvcp.timerseconds.in <= time.watch.seconds
+net cycle-minutes qtpyvcp.timerminutes.in <= time.watch.minutes
+net cycle-hours   qtpyvcp.timerhours.in   <= time.watch.hours
 # *** Time items required for Probe Basic to run ***
 
 #  ---manual tool change signals---

@@ -28,35 +28,33 @@ net joint-0-enable => [MESA](CARD0).ssr.00.out-02
 net mist-output iocontrol.0.coolant-mist => [MESA](CARD0).ssr.00.out-01
 
 loadrt tp count=2
-addf tp.0 servo-thread
-setp tp.0.pt 1
-addf tp.1 servo-thread
-setp tp.1.pt 0.2
+loadrt tp names=tp.estop_pulse
+addf tp.estop_pulse servo-thread
+setp tp.estop_pulse.pt 1
 
 loadrt or2 count=3
 addf or2.0 servo-thread
 addf or2.1 servo-thread
 addf or2.2 servo-thread
 
-loadrt not count=2
-addf not.0 servo-thread
-addf not.1 servo-thread
+loadrt not names=not.estop_pulse
+addf not.estop_pulse servo-thread
 
-loadrt timedelay count=1
-addf timedelay.0 servo-thread
-setp timedelay.0.on-delay 0.1 
+loadrt timedelay names=timedelay.estop_reset
+addf timedelay.estop_reset servo-thread
+setp timedelay.estop_reset.on-delay 0.1 
 
 loadrt estop_latch count=1
 addf   estop-latch.0                        servo-thread
 
-net aa0 iocontrol.0.user-request-enable [MESA](CARD0).ssr.00.out-03 timedelay.0.in estop-latch.0.reset
-net aa7 timedelay.0.out halui.estop.reset
+net aa0 iocontrol.0.user-request-enable [MESA](CARD0).ssr.00.out-03 timedelay.estop_reset.in estop-latch.0.reset
+net aa7 timedelay.estop_reset.out halui.estop.reset
 net aa1 estop-latch.0.ok-in iocontrol.0.user-enable-out
 net aa2 estop-latch.0.ok-out iocontrol.0.emc-enable-in
 net aa3 estop-latch.0.fault-in [MESA](CARD0).inmux.00.input-23-not
-net aa4 estop-latch.0.fault-out tp.0.in
-net aa5 tp.0.q not.1.in
-net aa6 not.1.out [MESA](CARD0).ssr.00.out-04 [MESA](CARD0).ssr.00.out-05
+net aa4 estop-latch.0.fault-out tp.estop_pulse.in
+net aa5 tp.estop_pulse.q not.estop_pulse.in
+net aa6 not.estop_pulse.out [MESA](CARD0).ssr.00.out-04 [MESA](CARD0).ssr.00.out-05
 
 loadrt and2 count=7
 loadrt toggle count=1
