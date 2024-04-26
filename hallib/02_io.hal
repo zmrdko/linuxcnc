@@ -27,7 +27,6 @@ net joint-3-fault => joint.3.amp-fault-in
 net joint-0-enable => [MESA](CARD0).ssr.00.out-02
 net mist-output iocontrol.0.coolant-mist => [MESA](CARD0).ssr.00.out-01
 
-loadrt tp count=2
 loadrt tp names=tp.estop_pulse
 addf tp.estop_pulse servo-thread
 setp tp.estop_pulse.pt 1

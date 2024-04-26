@@ -1,19 +1,12 @@
-loadrt time names time.watch
-addf time.watch servo-thread
-
-loadrt not names=not.timer
-addf not.timer servo-thread
-
+# *** Time items required for Probe Basic to run ***
 net prog-running not.timer.in <= halui.program.is-idle
 net prog-paused halui.program.is-paused => time.watch.pause
 net cycle-timer time.watch.start <= not.timer.out
 net cycle-seconds qtpyvcp.timerseconds.in <= time.watch.seconds
 net cycle-minutes qtpyvcp.timerminutes.in <= time.watch.minutes
 net cycle-hours   qtpyvcp.timerhours.in   <= time.watch.hours
-# *** Time items required for Probe Basic to run ***
 
 #  ---manual tool change signals---
-#loadusr -W hal_manualtoolchange
 net tool-change-request  iocontrol.0.tool-change   =>  qtpyvcp_manualtoolchange.change
 net tool-change-confirmed iocontrol.0.tool-changed  <=  qtpyvcp_manualtoolchange.changed
 net tool-number       iocontrol.0.tool-prep-number      =>  qtpyvcp_manualtoolchange.number
