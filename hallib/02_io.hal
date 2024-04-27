@@ -1,32 +1,36 @@
-# This file was created with the Mesa Configuration Tool on Nov 25 2023 17:07:40
-# If you make changes to this file DO NOT use the Configuration Tool
-
-# Inputs
-net plus-home-joint-0 joint.0.pos-lim-sw-in
-net plus-home-joint-0 joint.0.home-sw-in <= [MESA](CARD0).inmux.00.input-00-not
+# Home and Limit Inputs
+net plus-home-joint-0 <= [MESA](CARD0).inmux.00.input-00-not
+net plus-home-joint-0 => joint.0.pos-lim-sw-in
+net plus-home-joint-0 => joint.0.home-sw-in
 net joint-0-fault <= [MESA](CARD0).inmux.00.input-01-not
 net joint-0-fault => joint.0.amp-fault-in
 
-net plus-home-joint-1 joint.1.pos-lim-sw-in
-net plus-home-joint-1 joint.1.home-sw-in <= [MESA](CARD0).inmux.00.input-02-not
+net plus-home-joint-1 <= [MESA](CARD0).inmux.00.input-02-not
+net plus-home-joint-1 => joint.1.pos-lim-sw-in
+net plus-home-joint-1 => joint.1.home-sw-in
 net joint-1-fault <= [MESA](CARD0).inmux.00.input-03-not
 net joint-1-fault => joint.1.amp-fault-in
 
-net plus-home-joint-2 joint.2.pos-lim-sw-in
-net plus-home-joint-2 joint.2.home-sw-in <= [MESA](CARD0).inmux.00.input-04-not
+net plus-home-joint-2 <= [MESA](CARD0).inmux.00.input-04-not
+net plus-home-joint-2 => joint.2.pos-lim-sw-in
+net plus-home-joint-2 => joint.2.home-sw-in
 net joint-2-fault <= [MESA](CARD0).inmux.00.input-05-not
 net joint-2-fault => joint.2.amp-fault-in
 
-net plus-home-joint-3 joint.3.pos-lim-sw-in
-net plus-home-joint-3 joint.3.home-sw-in <= [MESA](CARD0).inmux.00.input-06-not
+net plus-home-joint-3 <= [MESA](CARD0).inmux.00.input-06-not
+net plus-home-joint-3 => joint.3.pos-lim-sw-in
+net plus-home-joint-3 => joint.3.home-sw-in
 net joint-3-fault <= [MESA](CARD0).inmux.00.input-07-not
 net joint-3-fault => joint.3.amp-fault-in
 
 
 # Outputs
 net joint-0-enable => [MESA](CARD0).ssr.00.out-02
-net mist-output iocontrol.0.coolant-mist => [MESA](CARD0).ssr.00.out-01
+net mist-output <= iocontrol.0.coolant-mist
+net mist-output => [MESA](CARD0).ssr.00.out-01
 
+
+# Estop loop
 loadrt tp names=tp.estop_pulse
 addf tp.estop_pulse servo-thread
 setp tp.estop_pulse.pt 1
@@ -44,42 +48,62 @@ addf timedelay.estop_reset servo-thread
 setp timedelay.estop_reset.on-delay 0.1 
 
 loadrt estop_latch count=1
-addf   estop-latch.0                        servo-thread
+addf   estop-latch.0 servo-thread
 
-net aa0 iocontrol.0.user-request-enable [MESA](CARD0).ssr.00.out-03 timedelay.estop_reset.in estop-latch.0.reset
-net aa7 timedelay.estop_reset.out halui.estop.reset
-net aa1 estop-latch.0.ok-in iocontrol.0.user-enable-out
-net aa2 estop-latch.0.ok-out iocontrol.0.emc-enable-in
-net aa3 estop-latch.0.fault-in [MESA](CARD0).inmux.00.input-23-not
-net aa4 estop-latch.0.fault-out tp.estop_pulse.in
-net aa5 tp.estop_pulse.q not.estop_pulse.in
-net aa6 not.estop_pulse.out [MESA](CARD0).ssr.00.out-04 [MESA](CARD0).ssr.00.out-05
+net estop.reset <= iocontrol.0.user-request-enable
+net estop.reset => [MESA](CARD0).ssr.00.out-03
+net estop.reset => timedelay.estop_reset.in
+net estop.reset => estop-latch.0.reset
+net estop.timedelay-reset <= timedelay.estop_reset.out 
+net estop.timedelay-reset => halui.estop.reset
+net estop.ok-in <= iocontrol.0.user-enable-out
+net estop.ok-in => estop-latch.0.ok-in
+net estop.ok-out <= estop-latch.0.ok-out
+net estop.ok-out => iocontrol.0.emc-enable-in
+net estop.fault-in <= [MESA](CARD0).inmux.00.input-23-not
+net estop.fault-in => estop-latch.0.fault-in
+net estop.fault-out <= estop-latch.0.fault-out
+net estop.fault-out => tp.estop_pulse.in
+net estop.pulse <= tp.estop_pulse.q
+net estop.pulse => not.estop_pulse.in
+net estop.output <= not.estop_pulse.out
+net estop.output => [MESA](CARD0).ssr.00.out-04
+net estop.output => [MESA](CARD0).ssr.00.out-05
 
 
 # Probe with debounce and enabled only during probing mode
 loadrt and2 names=and2.probe
-loadrt comp names=comp.probe
-loadrt conv_s32_float names=conv_s32_float.probe
-loadrt constant names=constant.motion-probe
-
 addf and2.probe servo-thread
+
+loadrt comp names=comp.probe
 addf comp.probe servo-thread
+
+loadrt conv_s32_float names=conv_s32_float.probe
 addf conv_s32_float.probe servo-thread
-addf constant.motion-probe servo-thread
 
 #constant for motion-type 38.2 (probe)
+loadrt constant names=constant.motion-probe
+addf constant.motion-probe servo-thread
 setp constant.motion-probe.value 5
 
 loadrt debounce cfg=1
 addf debounce.0 servo-thread
 setp debounce.0.delay 10
-net probe.convert-motion-type motion.motion-type conv_s32_float.probe.in
-net probe.compare-in0 conv_s32_float.probe.out comp.probe.in0
-net probe.compare-in1 constant.motion-probe.out comp.probe.in1
-net probe.mesa-input debounce.0.0.in <= [MESA](CARD0).inmux.00.input-08-not
-net probe.motion-type-condition comp.probe.equal and2.probe.in0
-net probe.debounced-out debounce.0.0.out => and2.probe.in1
-net probe-in and2.probe.out motion.probe-input
+
+net probe.convert-motion-type <= motion.motion-type
+net probe.convert-motion-type => conv_s32_float.probe.in
+net probe.compare-in0 <= conv_s32_float.probe.out
+net probe.compare-in0 => comp.probe.in0
+net probe.compare-in1 <= constant.motion-probe.out
+net probe.compare-in1 => comp.probe.in1
+net probe.mesa-input <= [MESA](CARD0).inmux.00.input-08-not
+net probe.mesa-input => debounce.0.0.in
+net probe.motion-type-condition <= comp.probe.equal
+net probe.motion-type-condition => and2.probe.in0
+net probe.debounced-out <= debounce.0.0.out => and2.probe.in1
+net probe.debounced-out => and2.probe.in1
+net probe-in <= and2.probe.out
+net probe-in => motion.probe-input
 
 
 
@@ -91,14 +115,15 @@ net probe-in and2.probe.out motion.probe-input
 #Pressing Hold/Resume while a program is paused will return it to normal run mode.
 
 loadrt and2 names=and2.paused,and2.resume,and2.run,and2.step
-loadrt toggle names=toggle.resume
-loadrt toggle2nist names=toggle2nist.resume
-
 addf and2.paused servo-thread
 addf and2.resume servo-thread
 addf and2.run servo-thread
 addf and2.step servo-thread
+
+loadrt toggle names=toggle.resume
 addf toggle.resume servo-thread
+
+loadrt toggle2nist names=toggle2nist.resume
 addf toggle2nist.resume servo-thread
 
 # Pause/Resume Section
