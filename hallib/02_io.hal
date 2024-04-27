@@ -127,7 +127,7 @@ net probe.mesa-input <= [MESA](CARD0).inmux.00.input-08-not
 net probe.mesa-input => debounce.0.0.in
 net probe.motion-type-condition <= comp.probe.equal
 net probe.motion-type-condition => and2.probe.in0
-net probe.debounced-out <= debounce.0.0.out => and2.probe.in1
+net probe.debounced-out <= debounce.0.0.out
 net probe.debounced-out => and2.probe.in1
 net probe-in <= and2.probe.out
 net probe-in => motion.probe-input
