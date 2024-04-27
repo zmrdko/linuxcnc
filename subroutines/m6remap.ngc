@@ -41,7 +41,7 @@ M6 (use built in M6 behavior)
 
 (tool touchoff after M6 tool change)
 o120 if [#<tmp_current_tool> NE #<tmp_selected_tool>]
-  o<tool_touch_off> call [300] [60] [80] [0] [70] [1] [1] [0] [0] [0]
+  o<tool_touch_off> call [300] [60] [80] [0] [109] [1] [1] [0] [0] [0]
 o120 endif
 
 (go to initial XY position via safe Z0 then go initial Z0 position)
