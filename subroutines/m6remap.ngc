@@ -16,17 +16,36 @@ O<m6remap> sub
 
 #<tmp_current_tool> = #<_current_tool>
 #<tmp_selected_tool> = #<_selected_tool>
+#<init_absolute> = #<_absolute>
+#<init_incremental> = #<_incremental>
+#<init_x> = #<_x>
+#<init_y> = #<_y>
+#<init_z> = #<_z>
 
 o100 if [#<tmp_current_tool> NE #<tmp_selected_tool>]
+
+  o110 if [#<init_incremental> EQ 1]
+    G90
+  o110 endif
+
   G0 G53 Z0
   G0 G53 X#<_ini[tool_change]xpos> Y#<_ini[tool_change]ypos>
+
 o100 endif
 
 M6 (use built in M6 behavior)
 
-o110 if [#<tmp_current_tool> NE #<tmp_selected_tool>]
+o120 if [#<tmp_current_tool> NE #<tmp_selected_tool>]
   o<tool_touch_off> call [300] [60] [80] [0] [70] [1] [1] [0] [0] [0]
-o110 endif
+o120 endif
+
+G0 X#<init_x> Y#<init_y>
+G0 Z#<init_z>
+
+o130 if [#<init_incremental> EQ 1]
+  G91
+o130 endif
+
 
 O<m6remap> endsub [1]
 m2
