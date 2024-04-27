@@ -56,11 +56,13 @@ net aa5 tp.estop_pulse.q not.estop_pulse.in
 net aa6 not.estop_pulse.out [MESA](CARD0).ssr.00.out-04 [MESA](CARD0).ssr.00.out-05
 
 
+# Probe with debounce and enabled only during probing mode
 loadrt and2 names=and2.probe
 loadrt comp names=comp.probe
 loadrt conv_s32_float names=conv_s32_float.probe
 loadrt constant names=constant.motion-probe
 
+addf and2.probe servo-thread
 addf comp.probe servo-thread
 addf conv_s32_float.probe servo-thread
 addf constant.motion-probe servo-thread
@@ -68,7 +70,6 @@ addf constant.motion-probe servo-thread
 #constant for motion-type 38.2 (probe)
 setp constant.motion-probe.value 5
 
-#probe with debounce
 loadrt debounce cfg=1
 addf debounce.0 servo-thread
 setp debounce.0.delay 10
@@ -76,9 +77,11 @@ net probe.convert-motion-type motion.motion-type conv_s32_float.probe.in
 net probe.compare-in0 conv_s32_float.probe.out comp.probe.in0
 net probe.compare-in1 constant.motion-probe.out comp.probe.in1
 net probe.mesa-input debounce.0.0.in <= [MESA](CARD0).inmux.00.input-08-not
-net probe.motion-type-condition comp.probe.out and2.probe.in0
-net probe-in debounce.0.0.out => and2.probe.in1
-net probe.final-output and2.probe.out motion.probe-input
+net probe.motion-type-condition comp.probe.equal and2.probe.in0
+net probe.debounced-out debounce.0.0.out => and2.probe.in1
+net probe-in and2.probe.out motion.probe-input
+
+
 
 # External Program Pause/Resume and Run/Step Buttons
 
@@ -95,7 +98,6 @@ addf and2.paused servo-thread
 addf and2.resume servo-thread
 addf and2.run servo-thread
 addf and2.step servo-thread
-addf and2.probe servo-thread
 addf toggle.resume servo-thread
 addf toggle2nist.resume servo-thread
 

@@ -46,8 +46,6 @@ M102
 G4 P0.2
 M103
 
-M64 P0
-
 G91
 F #<fast_probe_fr>
 G38.2 Z-[#<z_max_travel>]    (fast tool probe)
@@ -64,8 +62,6 @@ o120 if [#<slow_probe_fr> GT 0]
     G90
     G0 Z[#<z_slow_probe> + #<retract_distance>]
 o120 endif
-
-M65 P0
 
 o130 if [#5070 EQ 1]    (verify probe event was succesful)
     #<z_slow_probe> = #5063    (save slow probe result to parameters)
