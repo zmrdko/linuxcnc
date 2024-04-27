@@ -7,9 +7,10 @@ net cycle-minutes qtpyvcp.timerminutes.in <= time.watch.minutes
 net cycle-hours   qtpyvcp.timerhours.in   <= time.watch.hours
 
 #  ---manual tool change signals---
-net tool-change-request  iocontrol.0.tool-change   =>  qtpyvcp_manualtoolchange.change
-net tool-change-confirmed iocontrol.0.tool-changed  <=  qtpyvcp_manualtoolchange.changed
-net tool-number       iocontrol.0.tool-prep-number      =>  qtpyvcp_manualtoolchange.number
+net tool-prepare-loopback iocontrol.0.tool-prepare          =>  iocontrol.0.tool-prepared
+net tool-change-request   iocontrol.0.tool-change           =>  qtpyvcp_manualtoolchange.change
+net tool-change-confirmed iocontrol.0.tool-changed          <=  qtpyvcp_manualtoolchange.changed
+net tool-number           iocontrol.0.tool-prep-number      =>  qtpyvcp_manualtoolchange.number
 
 # *** Probe graphic simulation trigger push probe tip ***
 #net probe-in  =>  qtpyvcp.probe-in.out

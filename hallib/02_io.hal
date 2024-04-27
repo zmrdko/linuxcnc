@@ -55,26 +55,26 @@ net aa4 estop-latch.0.fault-out tp.estop_pulse.in
 net aa5 tp.estop_pulse.q not.estop_pulse.in
 net aa6 not.estop_pulse.out [MESA](CARD0).ssr.00.out-04 [MESA](CARD0).ssr.00.out-05
 
-loadrt and2 count=7
-loadrt toggle count=1
-loadrt toggle2nist count=1
+loadrt and2 names=and2.paused,and2.resume,and2.run,and2.step,and2.probe
+loadrt toggle names=toggle.resume
+loadrt toggle2nist names=toggle2nist.resume
 
-addf and2.0 servo-thread
-addf and2.1 servo-thread
-addf and2.2 servo-thread
-addf and2.3 servo-thread
-addf and2.6 servo-thread
-addf toggle.0 servo-thread
-addf toggle2nist.0 servo-thread
+addf and2.paused servo-thread
+addf and2.resume servo-thread
+addf and2.run servo-thread
+addf and2.step servo-thread
+addf and2.probe servo-thread
+addf toggle.resume servo-thread
+addf toggle2nist.resume servo-thread
 
 #probe with debounce
 loadrt debounce cfg=1
 addf debounce.0 servo-thread
 setp debounce.0.delay 10
 net probe-in debounce.0.0.in <= [MESA](CARD0).inmux.00.input-08-not
-net probe-filt-and motion.digital-out-00 and2.6.in0
-net probe-debounce-and debounce.0.0.out => and2.6.in1
-net probe-out and2.6.out motion.probe-input
+net probe-filt-and motion.digital-out-00 and2.probe.in0
+net probe-debounce-and debounce.0.0.out => and2.probe.in1
+net probe-out and2.probe.out motion.probe-input
 
 # External Program Pause/Resume and Run/Step Buttons
 
@@ -84,20 +84,20 @@ net probe-out and2.6.out motion.probe-input
 #Pressing Hold/Resume while a program is paused will return it to normal run mode.
 
 # Pause/Resume Section
-#net pause-resume-btn and2.0.in0 and2.1.in0 <= [MESA](CARD0).inmux.00.input-16
-#net pdnt.program.is-paused toggle2nist.0.is-on and2.0.in1 and2.3.in1 <= halui.program.is-paused
-#net pdnt.program-is-running and2.1.in1 <= halui.program.is-running
-#net pause-sig or2.0.in0 <= and2.0.out
-#net resume-sig or2.0.in1 <= and2.1.out
-#net toggle-ok toggle.0.in <= or2.0.out
-#net togglesig toggle2nist.0.in <= toggle.0.out
-#net toggleon.or1 or2.2.in0 <= toggle2nist.0.on
+#net pause-resume-btn and2.paused.in0 and2.resume.in0 <= [MESA](CARD0).inmux.00.input-16
+#net pdnt.program.is-paused toggle2nist.resume.is-on and2.paused.in1 and2.step.in1 <= halui.program.is-paused
+#net pdnt.program-is-running and2.resume.in1 <= halui.program.is-running
+#net pause-sig or2.0.in0 <= and2.paused.out
+#net resume-sig or2.0.in1 <= and2.resume.out
+#net toggle-ok toggle.resume.in <= or2.0.out
+#net togglesig toggle2nist.resume.in <= toggle.resume.out
+#net toggleon.or1 or2.2.in0 <= toggle2nist.resume.on
 #net toggleon halui.program.pause or2.2.out
-#net pdnt.program.resume.or1 or2.1.in0 <= toggle2nist.0.off
+#net pdnt.program.resume.or1 or2.1.in0 <= toggle2nist.resume.off
 #net pdnt.program.resume halui.program.resume or2.1.out
 
 # Run/Step Section
-#net run-step-btn and2.2.in0 and2.3.in0 <= [MESA](CARD0).inmux.00.input-17
-#net prog-running and2.2.in1 <= halui.program.is-idle
-#net run-sig halui.mode.auto halui.program.run <= and2.2.out
-#net step-sig halui.program.step <= and2.3.out
+#net run-step-btn and2.run.in0 and2.step.in0 <= [MESA](CARD0).inmux.00.input-17
+#net prog-running and2.run.in1 <= halui.program.is-idle
+#net run-sig halui.mode.auto halui.program.run <= and2.run.out
+#net step-sig halui.program.step <= and2.step.out

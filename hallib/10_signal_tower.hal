@@ -1,0 +1,26 @@
+# RedAmberGreen stack light
+loadrt and2 names=and2.yellow,and2.green
+loadrt xor2 names=xor2.green
+loadrt siggen num_chan=1
+addf and2.yellow servo-thread
+addf and2.green servo-thread
+addf xor2.green servo-thread
+addf siggen.0.update servo-thread
+
+setp siggen.0.frequency 2
+
+#Red Light
+net red-on <= halui.estop.is-activated => hm2_7i95.0.gpio.009.out
+
+#Amber Light
+net machine.is-on <= halui.machine.is-on => and2.yellow.in0
+net prog-running <= halui.program.is-idle => and2.yellow.in1 
+net yellow-out <= and2.yellow.out
+net yellow-out => hm2_7i95.0.gpio.010.out
+
+#Green Light
+net pdnt.program-is-running <= halui.program.is-running => xor2.green.in0
+net prog-paused <= halui.program.is-paused => and2.green.in1
+net flash <= siggen.0.clock => and2.green.in0
+net green-flash <= and2.green.out => xor2.green.in1
+net green-on <= xor2.green.out => hm2_7i95.0.gpio.011.out

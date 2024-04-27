@@ -274,11 +274,3 @@ setp [MESA](CARD0).encoder.03.filter 1
 setp [MESA](CARD0).encoder.03.index-invert 0
 setp [MESA](CARD0).encoder.03.index-mask 0
 setp [MESA](CARD0).encoder.03.index-mask-invert 0
-
-#  Manual Tool Change Dialog
-loadusr -W hal_manualtoolchange
-#net tool-change-request iocontrol.0.tool-change => hal_manualtoolchange.change
-#net tool-change-confirmed iocontrol.0.tool-changed <= hal_manualtoolchange.changed
-#net tool-number iocontrol.0.tool-prep-number => hal_manualtoolchange.number
-net tool-prepare-loopback iocontrol.0.tool-prepare => iocontrol.0.tool-prepared
-
