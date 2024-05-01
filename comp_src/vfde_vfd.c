@@ -26,7 +26,7 @@
   License along with this program; if not, write to the Free Software
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301-1307  USA.
 
-  see 'man vfdb_vfd' and the VFD-B section in the Drivers manual.
+  see 'man vfde_vfd' and the VFD-E section in the Drivers manual.
 
  */
 
