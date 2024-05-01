@@ -1,7 +1,7 @@
 /*
   vfdb_vfd.c
 
-  userspace HAL program to control a Delta VFD-B VFD
+  userspace HAL program to control a Delta VFD-E VFD
 
   Yishin Li, adapted from Michael Haberler's vfs11_vfd/.
 
@@ -9,6 +9,7 @@
   Copyright (C) 2009,2010,2011,2012 Michael Haberler
   Copyright (C) 2013 Yishin Li
   Copyright (C) 2013 Sebastian Kuzminsky
+  Copyright (C) 2024 Maros Priecko
 
   Based on a work (test-modbus program, part of libmodbus) which is
   Copyright (C) 2001-2005 Stéphane Raimbault <stephane.raimbault@free.fr>
@@ -63,10 +64,10 @@
 #include <modbus-tcp.h>
 #include "inifile.h"
 
-// command registers for DELTA VFD-B Inverter
-#define REG_COMMAND1                    0x2000  // "Communication command" - start/stop, fwd/reverse, DC break, fault reset, panel override
-#define REG_FREQUENCY                   0x2001  // Set frequency in 0.01Hz steps
-#define REG_UPPERLIMIT                  0x0100  // limit on output frequency in VFD
+// command registers for DELTA VFD-E Inverter
+#define REQ_OPERATION_COMMAND           0x2000  // Operation command - start/stop, fwd/reverse, DC break, fault reset, panel override
+#define REG_FREQUENCY_COMMAND           0x2001  // Frequency command (XXX.XX Hz). There are two decimal places for general-purpose drives
+#define REQ_MAX_FREQ                    0x0100  // limit on output frequency in VFD
 
 // command bits
 #define CMD_FAULT_RESET                 0x2000
@@ -77,16 +78,14 @@
 #define CMD_FORWARD                     0x0010
 #define CMD_JOG_RUN                     0x0003
 
-// status registers for DELTA VFD-B Inverter
+// status registers for DELTA VFD-E Inverter
 #define SR_ERROR_CODE                   0x2100  //
 #define SR_INV_OPSTATUS                 0x2101  //
-#define SR_OUTPUT_FREQ                  0x2103  // 0.01Hz units
+#define SR_OUTPUT_FREQ                  0x2103  // Output frequency (Hz)
+#define SR_OUTPUT_CURRENT               0x2104  // Output current (XXX.X A)
+#define SR_OUTPUT_VOLTAGE               0x2109  // Output voltage (XXX.X V)
 #define ST_EMERGENCY_STOPPED            0x0021  // EF1/ESTOP
 
-#define SR_MOTOR_SPEED                  0x210C  // RPM
-#define SR_TORQUE_RATIO                 0x210B  // %
-#define SR_OUTPUT_CURRENT               0x2104  // output curr
-#define SR_OUTPUT_VOLTAGE               0x2106  // %
 #define SR_INVERTER_MODEL               0x0000
 #define SR_RATED_CURRENT                0x0001  // 0.1A
 #define SR_RATED_VOLTAGE                0x0102  // 0.1V
@@ -96,7 +95,7 @@
  * are contiguous and all of them can be read with a single read_holding_registers()
  * operation.
  *
- * However, the interesting VFD-B registers are not contiguous, and must be read
+ * However, the interesting VFD-E registers are not contiguous, and must be read
  * one-by-one, because the Toshiba Modbus implementation only supports single-value
  * modbus_read_registers() queries, slowing things down considerably. It seems that
  * other VFD's have similar restrictions.
@@ -114,35 +113,36 @@
 typedef struct {
     hal_s32_t   *error_code;
     hal_s32_t 	*status;
-    hal_float_t	*freq_cmd;	// frequency command
-    hal_float_t	*freq_out;	// actual output frequency
-    hal_float_t	*output_volt;	// output voltage
+    hal_float_t	*freq_cmd;	            // frequency command
+    hal_float_t	*freq_out;	            // actual output frequency
+    hal_float_t	*output_volt;	        // output voltage
+    hal_float_t	*output_current;        // output current
+    hal_float_t	*output_load;          // output load
     hal_float_t	*RPM;
     hal_float_t *RPS;
-    hal_float_t	*torque_ratio;
-    hal_float_t	*output_current;
-    hal_float_t *max_rpm;	// calculated based on VFD max frequency setup parameter
-    hal_bit_t	*at_speed;	// when drive freq_cmd == freq_out and running
-    hal_bit_t	*is_stopped;	// when drive freq out is 0
-    hal_bit_t	*is_e_stopped;	// true if emergency stop status set in 0xFD00
-    hal_bit_t	*modbus_ok;	// the last MODBUS_OK transactions returned successfully
-    hal_float_t	*speed_command;	// speed command input
+    hal_float_t *max_rpm;	            // calculated based on VFD max frequency setup parameter
+    hal_bit_t	*at_speed;	            // when drive freq_cmd == freq_out and running
+    hal_bit_t	*is_stopped;	        // when drive freq out is 0
+    hal_bit_t	*is_e_stopped;	        // true if emergency stop status set in 0xFD00
+    hal_bit_t	*modbus_ok;	            // the last MODBUS_OK transactions returned successfully
+    hal_float_t	*speed_command;	        // speed command input
 
-    hal_bit_t	*spindle_on;	// spindle 1=on, 0=off
+    hal_bit_t	*spindle_on;	        // spindle 1=on, 0=off
     // hal_bit_t	*err_reset;	// reset errors when 1  - set fault reset bit in 0xFA00
-    hal_bit_t	*jog_mode;	// termed 'jog-run' in manual - might be useful for spindle positioning
-    hal_s32_t	*errorcount;    // number of failed Modbus transactions - hints at logical errors
+    hal_bit_t	*jog_mode;	            // termed 'jog-run' in manual - might be useful for spindle positioning
+    hal_s32_t	*errorcount;            // number of failed Modbus transactions - hints at logical errors
 
     hal_float_t	looptime;
     hal_float_t	speed_tolerance;
-    hal_float_t	motor_nameplate_hz;	// speeds are scaled in Hz, not RPM
+    hal_float_t	motor_nameplate_hz;	    // speeds are scaled in Hz, not RPM
     hal_float_t	motor_nameplate_RPM;	// nameplate RPM at default Hz
-    hal_float_t	rpm_limit;		// do-not-exceed output frequency
-    hal_bit_t	*enabled;		// if set: control VFD via Modbus commands, panel control disabled
+    hal_float_t	motor_nameplate_Watts;  // nameplate Watts at default Hz
+    hal_float_t	rpm_limit;		        // do-not-exceed output frequency
+    hal_bit_t	*enabled;		        // if set: control VFD via Modbus commands, panel control disabled
     // if zero (default): manual control through panel enabled
     hal_float_t	*upper_limit_hz;		// VFD setup parameter - maximum output frequency in HZ
 
-    hal_bit_t   *max_speed;        // 1: run as fast as possible, ignore unimportant registers
+    hal_bit_t   *max_speed;             // 1: run as fast as possible, ignore unimportant registers
     // link this to spindle.orient-enable for better orient PID loop behaviour
 } haldata_t;
 
@@ -175,6 +175,7 @@ typedef struct params {
     int report_device;
     int motor_hz;  // rated frequency of the motor
     int motor_rpm;  // rated speed of the motor
+    int motor_watts;  // rated speed of the motor
 } params_type, *param_pointer;
 
 // default options; read from INI file or command line
@@ -206,6 +207,7 @@ static params_type param = {
         .report_device = 0,
         .motor_hz = 50,     // 50 is common in Europe, 60 is common in the US
         .motor_rpm = 1410,  // 1410 is common in Europe, 1730 is common in the US
+        .motor_watts = 2200,  // standard 2.2kW spindle
 };
 
 
@@ -220,7 +222,7 @@ static struct option long_options[] = {
         {"report-device", no_argument, 0, 'r'},
         {"ini", required_argument, 0, 'I'},     // default: getenv(INI_FILE_NAME)
         {"section", required_argument, 0, 'S'}, // default section = LIBMODBUS
-        {"name", required_argument, 0, 'n'},    // vfd-b
+        {"name", required_argument, 0, 'n'},    // vfd-e
         {0,0,0,0}
 };
 
@@ -324,6 +326,7 @@ int read_ini(param_pointer p)
 
         iniFindInt(p->fp, "MOTOR_HZ", p->section, &p->motor_hz);
         iniFindInt(p->fp, "MOTOR_RPM", p->section, &p->motor_rpm);
+        iniFindInt(p->fp, "MOTOR_WATTS", p->section, &p->motor_watts);
 
         if ((s = iniFind(p->fp, "DEVICE", p->section))) {
             p->device = strdup(s);
@@ -352,7 +355,7 @@ void usage(int argc, char **argv) {
             "-I or --ini <INI file>\n"
             "    Use <inifile> (default: take INI filename from environment variable INI_FILE_NAME)\n"
             "-S or --section <section-name> (default 8)\n"
-            "    Read parameters from <section_name> (default 'VFD-B')\n"
+            "    Read parameters from <section_name> (default 'VFD-E')\n"
             "-d or --debug\n"
             "    Turn on debugging messages. Toggled by USR1 signal.\n"
             "-m or --modbus-debug\n"
@@ -370,8 +373,8 @@ int write_data(modbus_t *ctx, haldata_t *haldata, param_pointer p)
 
     if (!*(haldata->enabled)) {
         // send 0 to 0x2000 register - no bus control
-        if (modbus_write_register(ctx, REG_COMMAND1, 0) < 0) {
-            p->failed_reg = REG_COMMAND1;
+        if (modbus_write_register(ctx, REQ_OPERATION_COMMAND, 0) < 0) {
+            p->failed_reg = REQ_OPERATION_COMMAND;
             (*haldata->errorcount)++;
             p->last_errno = errno;
             return errno;
@@ -406,7 +409,7 @@ retry:
         cmd1_reg |= CMD_REVERSE;
     }
 
-//TODO: implement RESET command for VFD-B
+//TODO: implement RESET command for VFD-E
 //    // send CMD_FAULT_RESET and CMD_EMERGENCY_STOP only once so the poor thing comes back
 //    // out of reset/estop status eventually
 //    if (*(haldata->err_reset) && !(p->old_cmd1_reg  & CMD_FAULT_RESET ))	{ // not sent yet
@@ -418,7 +421,7 @@ retry:
 
     DBG("write_data: cmd1_reg=0x%4.4X old cmd1_reg=0x%4.4X\n", cmd1_reg,p->old_cmd1_reg);
 
-    if (modbus_write_register(ctx, REG_COMMAND1, cmd1_reg) < 0) {
+    if (modbus_write_register(ctx, REQ_OPERATION_COMMAND, cmd1_reg) < 0) {
         // modbus transaction timed out. This may happen if VFD is in E-Stop.
         // if VFD was in E-Stop, and a fault reset was sent, wait about 2 seconds for recovery
         // we must assume that any command and frequency values sent were cleared, so we restart
@@ -429,7 +432,7 @@ retry:
             sleep(2);
             goto retry;
         }
-        p->failed_reg = REG_COMMAND1;
+        p->failed_reg = REQ_OPERATION_COMMAND;
         (*haldata->errorcount)++;
         p->last_errno = errno;
         return errno;
@@ -439,8 +442,8 @@ retry:
     // otherwise the VFD keeps rebooting as long as the fault reset/estop reset bits are sent
     p->old_cmd1_reg = cmd1_reg;
 
-    if ((modbus_write_register(ctx, REG_FREQUENCY, freq_reg)) < 0) {
-        p->failed_reg = REG_FREQUENCY;
+    if ((modbus_write_register(ctx, REG_FREQUENCY_COMMAND, freq_reg)) < 0) {
+        p->failed_reg = REG_FREQUENCY_COMMAND;
         (*haldata->errorcount)++;
         p->last_errno = errno;
         return errno;
@@ -462,16 +465,16 @@ int read_initial(modbus_t *ctx, haldata_t *haldata, param_pointer p)
     uint16_t curr_reg, current, 
     voltage, model, eeprom, max_freq;
 
-    GETREG(REG_UPPERLIMIT, &max_freq);
+    GETREG(REQ_MAX_FREQ, &max_freq);
     *(haldata->upper_limit_hz) = (float)max_freq/100.0;
     *(haldata->max_rpm) = *(haldata->upper_limit_hz) * 
             haldata->motor_nameplate_RPM / haldata->motor_nameplate_hz;
 
     if (p->report_device) {
-        GETREG(SR_RATED_CURRENT, &current);
-        GETREG(SR_RATED_VOLTAGE, &voltage);
         GETREG(SR_INVERTER_MODEL, &model);
         GETREG(SR_EEPROM_VERSION, &eeprom);
+        GETREG(SR_RATED_CURRENT, &current);
+        GETREG(SR_RATED_VOLTAGE, &voltage);
 
         printf("%s: inverter model: %d/0x%4.4x\n",
                 p->progname, model, model);
@@ -515,6 +518,8 @@ int read_data(modbus_t *ctx, haldata_t *haldata, param_pointer p)
 
     GETREG(SR_OUTPUT_FREQ, &freq_reg);
     *(haldata->freq_out) = freq_reg * 0.01;
+    *(haldata->RPM) = freq_reg*0.01*60;
+    *(haldata->RPS) = freq_reg*0.01;
 
     DBG("read_data: status_reg=%4.4x freq_reg=%4.4x\n", status_reg, freq_reg);
 
@@ -529,19 +534,15 @@ int read_data(modbus_t *ctx, haldata_t *haldata, param_pointer p)
 
     if ((pollcount == 0) && !*(haldata->max_speed)) {
         // less urgent registers
-        GETREG(SR_MOTOR_SPEED, &val);
-        *(haldata->RPM) = val;
-        *(haldata->RPS) = val/60.0;
-
-        GETREG(SR_TORQUE_RATIO, &val);
-        *(haldata->torque_ratio) =  val;
 
         GETREG(SR_OUTPUT_CURRENT, &val);
         *(haldata->output_current) =  val * 0.1;
 
         GETREG(SR_OUTPUT_VOLTAGE, &val);
         *(haldata->output_volt) =  val * 0.1;
-
+		
+		*(haldata->output_load) = (*(haldata->output_current) * *(haldata->output_volt)) / 22.00;
+		
         {
             float speed_error;
             speed_error = (*haldata->freq_out / *haldata->freq_cmd) - 1.0;
@@ -590,7 +591,7 @@ int hal_setup(int id, haldata_t *h, const char *name)
     PIN(hal_pin_bit_newf(HAL_IN, &(h->jog_mode), id, "%s.jog-mode", name));
     PIN(hal_pin_float_newf(HAL_OUT, &(h->freq_cmd), id, "%s.frequency-command", name));
     PIN(hal_pin_float_newf(HAL_OUT, &(h->freq_out), id, "%s.frequency-out", name));
-    PIN(hal_pin_float_newf(HAL_OUT, &(h->torque_ratio), id, "%s.inverter-load-percentage", name));
+    PIN(hal_pin_float_newf(HAL_OUT, &(h->output_load), id, "%s.inverter-load-percentage", name));
     PIN(hal_pin_bit_newf(HAL_OUT, &(h->is_e_stopped), id, "%s.is-e-stopped", name)); // JET
     PIN(hal_pin_bit_newf(HAL_OUT, &(h->is_stopped), id, "%s.is-stopped", name)); // JET
     PIN(hal_pin_float_newf(HAL_OUT, &(h->max_rpm), id, "%s.max-rpm", name));
@@ -625,7 +626,7 @@ int set_defaults(param_pointer p)
     *(h->freq_out) = 0;
     *(h->output_volt) = 0;
     *(h->RPM) = 0;
-    *(h->torque_ratio) = 0;
+    *(h->output_load) = 0;
     *(h->output_current) = 0;
     *(h->upper_limit_hz) = 0;
     *(h->at_speed) = 0;
@@ -645,6 +646,7 @@ int set_defaults(param_pointer p)
     h->speed_tolerance = 0.01;      // output frequency within 1% of target frequency
     h->motor_nameplate_hz = p->motor_hz;
     h->motor_nameplate_RPM = p->motor_rpm;
+    h->motor_nameplate_Watts = p->motor_watts;
     h->rpm_limit = p->motor_rpm;
     
     p->failed_reg = 0;
@@ -792,10 +794,10 @@ int main(int argc, char **argv)
             // cleanup actions before exiting.
             modbus_flush(p->ctx);
             // clear the command register (control and frequency override) so panel operation gets reactivated
-            if ((retval = modbus_write_register(p->ctx, REG_COMMAND1, 0)) != 1) {
+            if ((retval = modbus_write_register(p->ctx, REQ_OPERATION_COMMAND, 0)) != 1) {
                 // not much we can do about it here if it goes wrong, so complain
                 fprintf(stderr, "%s: failed to release VFD from bus control (write to register 0x%x): %s\n",
-                        p->progname, REG_COMMAND1, modbus_strerror(errno));
+                        p->progname, REQ_OPERATION_COMMAND, modbus_strerror(errno));
             } else {
                 DBG("%s: VFD released from bus control.\n", p->progname);
             }
