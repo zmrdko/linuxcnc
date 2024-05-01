@@ -1,7 +1,7 @@
 /*
   vfdb_vfd.c
 
-  userspace HAL program to control a Delta VFD-B VFD
+  userspace HAL program to control a Delta MS300 VFD
 
   Yishin Li, adapted from Michael Haberler's vfs11_vfd/.
 
@@ -26,7 +26,7 @@
   License along with this program; if not, write to the Free Software
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301-1307  USA.
 
-  see 'man vfdb_vfd' and the VFD-B section in the Drivers manual.
+  see 'man ms300_vfd' and the MS300 section in the Drivers manual.
 
  */
 
@@ -63,7 +63,7 @@
 #include <modbus-tcp.h>
 #include "inifile.h"
 
-// command registers for DELTA VFD-B Inverter
+// command registers for DELTA MS300 Inverter
 #define REG_COMMAND1                    0x2000  // "Communication command" - start/stop, fwd/reverse, DC break, fault reset, panel override
 #define REG_FREQUENCY                   0x2001  // Set frequency in 0.01Hz steps
 #define REG_UPPERLIMIT                  0x0100  // limit on output frequency in VFD
@@ -77,16 +77,19 @@
 #define CMD_FORWARD                     0x0010
 #define CMD_JOG_RUN                     0x0003
 
-// status registers for DELTA VFD-B Inverter
-#define SR_ERROR_CODE                   0x2100  //
-#define SR_INV_OPSTATUS                 0x2101  //
-#define SR_OUTPUT_FREQ                  0x2103  // 0.01Hz units
+// status registers for DELTA MS300 Inverter
+#define SR_ERROR_CODE                   0x2100  // Fault status
+#define SR_DRIVE_OPERATION_STATUS       0x2101  // Operation status
+#define SR_FREQUENCY_COMMAND            0x2101  // Frequency command
+#define SR_OUTPUT_FREQUENCY             0x2103  // Output frequency XXX.XX Hz
+#define SR_OUTPUT_CURRENT               0x2104  // Output current XX.XX A (for decimal see SR_OUTPUT_CURRENT_DIGIT)
+#define SR_OUTPUT_VOLTAGE               0x2106  // Output voltage XXX.X V
+#define SR_OUTPUT_TORQUE                0x210B  // Output torque XXX.X %
+#define SR_MOTOR_ACTUAL_SPEED           0x210C  // Actual motor speed XXXXX rpm
+#define SR_POWER_OUTPUT                 0x210F  // Output power X.XXX kW
+#define SR_OUTPUT_CURRENT_DIGIT         0x211F  // Current Digit
 #define ST_EMERGENCY_STOPPED            0x0021  // EF1/ESTOP
 
-#define SR_MOTOR_SPEED                  0x210C  // RPM
-#define SR_TORQUE_RATIO                 0x210B  // %
-#define SR_OUTPUT_CURRENT               0x2104  // output curr
-#define SR_OUTPUT_VOLTAGE               0x2106  // %
 #define SR_INVERTER_MODEL               0x0000
 #define SR_RATED_CURRENT                0x0001  // 0.1A
 #define SR_RATED_VOLTAGE                0x0102  // 0.1V
@@ -96,7 +99,7 @@
  * are contiguous and all of them can be read with a single read_holding_registers()
  * operation.
  *
- * However, the interesting VFD-B registers are not contiguous, and must be read
+ * However, the interesting MS300 registers are not contiguous, and must be read
  * one-by-one, because the Toshiba Modbus implementation only supports single-value
  * modbus_read_registers() queries, slowing things down considerably. It seems that
  * other VFD's have similar restrictions.
@@ -189,8 +192,8 @@ static params_type param = {
         .bits = 8,
         .parity = 'E',
         .stopbits = 1,
-        .progname = "vfde_vfd",
-        .section = "VFD-E",
+        .progname = "ms300_vfd",
+        .section = "MS300",
         .fp = NULL,
         .inifile = NULL,
         .reconnect_delay = 1,
@@ -508,12 +511,12 @@ int read_data(modbus_t *ctx, haldata_t *haldata, param_pointer p)
     GETREG(SR_ERROR_CODE, &curr_reg);
     *(haldata->error_code) = curr_reg;
 
-    // we always at least read the main status register SR_INV_OPSTATUS
+    // we always at least read the main status register SR_DRIVE_OPERATION_STATUS
     // and current operating frequency SR_OP_FREQUENCY
-    GETREG(SR_INV_OPSTATUS, &status_reg);
+    GETREG(SR_DRIVE_OPERATION_STATUS, &status_reg);
     *(haldata->status) = status_reg;
 
-    GETREG(SR_OUTPUT_FREQ, &freq_reg);
+    GETREG(SR_OUTPUT_FREQUENCY, &freq_reg);
     *(haldata->freq_out) = freq_reg * 0.01;
 
     DBG("read_data: status_reg=%4.4x freq_reg=%4.4x\n", status_reg, freq_reg);
@@ -529,11 +532,11 @@ int read_data(modbus_t *ctx, haldata_t *haldata, param_pointer p)
 
     if ((pollcount == 0) && !*(haldata->max_speed)) {
         // less urgent registers
-        GETREG(SR_MOTOR_SPEED, &val);
+        GETREG(SR_MOTOR_ACTUAL_SPEED, &val);
         *(haldata->RPM) = val;
         *(haldata->RPS) = val/60.0;
 
-        GETREG(SR_TORQUE_RATIO, &val);
+        GETREG(SR_OUTPUT_TORQUE, &val);
         *(haldata->torque_ratio) =  val;
 
         GETREG(SR_OUTPUT_CURRENT, &val);
@@ -544,7 +547,7 @@ int read_data(modbus_t *ctx, haldata_t *haldata, param_pointer p)
 
         {
             float speed_error;
-            speed_error = (*haldata->freq_out / *haldata->freq_cmd) - 1.0;
+            speed_error = (*haldata->RPM / *haldata->speed_command) - 1.0;
             if (fabs(speed_error) > haldata->speed_tolerance) {
                 *haldata->at_speed = 0;
             } else {
@@ -646,7 +649,7 @@ int set_defaults(param_pointer p)
     h->motor_nameplate_hz = p->motor_hz;
     h->motor_nameplate_RPM = p->motor_rpm;
     h->rpm_limit = p->motor_rpm;
-    
+
     p->failed_reg = 0;
     return 0;
 }
@@ -693,7 +696,7 @@ int main(int argc, char **argv)
         if (read_ini(p))
             goto finish;
         if (!p->modname)
-            p->modname = "vfde_vfd";
+            p->modname = "ms300_vfd";
     } else {
         fprintf(stderr, "%s: ERROR: no inifile - either use '--ini filename' or set INI_FILE_NAME environment variable\n", p->progname);
         goto finish;
@@ -831,3 +834,4 @@ int main(int argc, char **argv)
     windup(p);
     return retval;
 }
+
