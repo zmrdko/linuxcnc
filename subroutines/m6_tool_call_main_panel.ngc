@@ -1,13 +1,13 @@
 (author: Chris P)
-(version: 0.3)
-(date: 07/22/22)
+(version: 0.4)
+(date: 06/27/24)
 
 (m6 tool call with g43 offset applied)
 
 o<m6_tool_call_main_panel> sub
 
 #<tool_number_entry_main_panel> = #1
-#<probe_tool_number> = #2
+#<probe_tool_number> = #3014
 
 T#<tool_number_entry_main_panel> M6
 

@@ -2,11 +2,14 @@ o<go_to_zero> sub
 
 M73
 G90
-o100 if [#<_x> NE 0 OR #<_y> NE 0 OR #<_z> NE 0]
+o100 if [#<_x> NE 0 OR #<_y> NE 0]
     G53 G0 Z0
     G0 X0 Y0
-    G0 Z0
 o100 endif
+
+o110 if [#<_z> NE 0]
+    G0 Z0
+o110 endif
 
 o<go_to_zero> endsub
 
