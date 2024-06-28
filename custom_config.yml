@@ -8,7 +8,12 @@ data_plugins:
   tooltable:
     provider: qtpyvcp.plugins.tool_table:ToolTable
     kwargs:
-        columns: TXYZDR
+      columns: TZDR
+
+  offsettable:
+    provider: qtpyvcp.plugins.offset_table:OffsetTable
+    kwargs:
+      columns: "XYZABR"
 
 settings:
 
@@ -44,4 +49,3 @@ settings:
 
   backplot.multitool-colors:
     default_value: True
-
