@@ -1,5 +1,4 @@
 O<m6remap> sub
-(debug, m6remap)
 ;(debug, change: current_tool=#<_current_tool>)
 ;(debug, change: selected_tool=#<_selected_tool>)
 
